@@ -1,0 +1,4 @@
+data_type,data_id,prevalence
+condition,Common Cold,0.5
+condition,Hayfever,0.3
+condition,COVID-19,0.2

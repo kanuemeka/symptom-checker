@@ -1,0 +1,12 @@
+data_type,data_id,Hayfever,COVID-19,Common Cold
+symptom,Sneezing,0.9,0.1,0.7
+symptom,Runny nose,0.85,0.2,0.8
+symptom,Nasal congestion,0.75,0.4,0.85
+symptom,Cough,0.1,0.7,0.6
+symptom,Fever,0.0,0.85,0.1
+symptom,Sore throat,0.05,0.65,0.75
+symptom,Loss of smell or taste,0.05,0.8,0.05
+symptom,Headache,0.3,0.6,0.4
+symptom,Fatigue,0.2,0.75,0.3
+symptom,Watery or itchy eyes,0.95,0.05,0.1
+symptom,Shortness of breath,0.05,0.5,0.05
