@@ -39,3 +39,16 @@ aws dynamodb create-table \
     --endpoint-url http://localhost:8000
 ```
 And to create the Assessment Table
+```
+aws dynamodb create-table \
+    --table-name assessment \
+    --attribute-definitions \
+        AttributeName=assessmentId,AttributeType=S \
+    --key-schema \
+        AttributeName=assessmentId,KeyType=HASH \
+    --provisioned-throughput \
+        ReadCapacityUnits=5,WriteCapacityUnits=5 \
+    --table-class STANDARD \
+    --region eu-west-1 \
+    --endpoint-url http://localhost:8000
+```
