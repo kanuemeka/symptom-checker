@@ -15,6 +15,6 @@ services:
       - dynamodb-local
     image: "healthily/symptom-checker:latest"
     build:
-      dockerfile: Dockerfile
+      context: .
     ports:
       - "8080:8080"

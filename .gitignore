@@ -1,3 +1,5 @@
-target
+/target
 .idea
 *.iml
+/docker/
+shared-local-instance.db

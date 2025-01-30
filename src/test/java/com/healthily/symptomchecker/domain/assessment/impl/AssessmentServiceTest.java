@@ -1,6 +1,6 @@
 package com.healthily.symptomchecker.domain.assessment.impl;
 
-import com.healthily.symptomchecker.data.entities.AssessmentDTO;
+import com.healthily.symptomchecker.data.entities.Assessment;
 import com.healthily.symptomchecker.web.entities.AssessmentResults;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,19 +41,19 @@ public class AssessmentServiceTest {
         Map<String, String> updatedMap = new HashMap<>(symptomsMap);
         updatedMap.put("Cough", "Yes");
 
-        AssessmentDTO assessmentDTO = AssessmentDTO.builder()
+        Assessment assessment = Assessment.builder()
                 .userId("userId")
                 .assessmentId(assessmentId)
                 .symptomMap(symptomsMap)
                 .build();
 
-        AssessmentDTO updatedDTO = AssessmentDTO.builder()
+        Assessment updatedDTO = Assessment.builder()
                 .userId("userId")
                 .assessmentId(assessmentId)
                 .numberOfQuestionsAsked(1)
                 .symptomMap(updatedMap)
                 .build();
-        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessmentDTO);
+        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessment);
         when(dynamoDbTemplate.update(any())).thenReturn(updatedDTO);
 
         String question = "Cough";
@@ -76,20 +76,20 @@ public class AssessmentServiceTest {
         Map<String, String> updatedMap = new HashMap<>(symptomsMap);
         updatedMap.put("Cough", "Yes");
 
-        AssessmentDTO assessmentDTO = AssessmentDTO.builder()
+        Assessment assessment = Assessment.builder()
                 .userId("userId")
                 .assessmentId(assessmentId)
                 .numberOfQuestionsAsked(3)
                 .symptomMap(symptomsMap)
                 .build();
 
-        AssessmentDTO updatedDTO = AssessmentDTO.builder()
+        Assessment updatedDTO = Assessment.builder()
                 .userId("userId")
                 .assessmentId(assessmentId)
                 .numberOfQuestionsAsked(3)
                 .symptomMap(updatedMap)
                 .build();
-        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessmentDTO);
+        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessment);
         when(dynamoDbTemplate.update(any())).thenReturn(updatedDTO);
 
         String question = "Cough";
@@ -104,12 +104,12 @@ public class AssessmentServiceTest {
 
         String assessmentId = UUID.randomUUID().toString();
 
-        AssessmentDTO assessmentDTO = AssessmentDTO.builder()
+        Assessment assessment = Assessment.builder()
                 .assessmentId(assessmentId)
                 .symptomMap(Map.of("Sneezing", "Yes"))
                 .build();
 
-        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessmentDTO);
+        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessment);
         AssessmentResults results = assessmentService.getResults(assessmentId);
 
         assertNotNull(results);
@@ -127,12 +127,12 @@ public class AssessmentServiceTest {
         symtomsMap.put("Nasal congestion", "No");
         symtomsMap.put("Cough", "No");
 
-        AssessmentDTO assessmentDTO = AssessmentDTO.builder()
+        Assessment assessment = Assessment.builder()
                 .assessmentId(assessmentId)
                 .symptomMap(symtomsMap)
                 .build();
 
-        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessmentDTO);
+        when(dynamoDbTemplate.load(any(Key.class), any())).thenReturn(assessment);
         AssessmentResults results = assessmentService.getResults(assessmentId);
 
         assertNotNull(results);

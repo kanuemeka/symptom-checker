@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class LoginSuccess {
-    private String userId;
+public class AssessmentResponse {
+    private String assessmentId;
+    private String nextQuestionId;
 }

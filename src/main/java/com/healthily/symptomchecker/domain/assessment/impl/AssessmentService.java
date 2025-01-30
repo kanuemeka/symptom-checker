@@ -1,11 +1,11 @@
 package com.healthily.symptomchecker.domain.assessment.impl;
 
-import com.healthily.symptomchecker.data.entities.AssessmentDTO;
+import com.healthily.symptomchecker.data.entities.Assessment;
 import com.healthily.symptomchecker.data.repositories.AssessmentNotFound;
 import com.healthily.symptomchecker.domain.assessment.AssessmentRetriever;
 import com.healthily.symptomchecker.domain.assessment.AssessmentStarter;
 import com.healthily.symptomchecker.domain.assessment.ResponseRecorder;
-import com.healthily.symptomchecker.web.entities.Assessment;
+import com.healthily.symptomchecker.web.entities.AssessmentResponse;
 import com.healthily.symptomchecker.web.entities.AssessmentResults;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import lombok.RequiredArgsConstructor;
@@ -26,20 +26,21 @@ public class AssessmentService implements AssessmentStarter, ResponseRecorder, A
     private final DynamoDbTemplate dynamoDbTemplate;
 
     @Override
-    public Assessment beginAssessment(String userId, Set<String> initialSymptoms) {
+    public AssessmentResponse beginAssessment(String userId, Set<String> initialSymptoms) {
 
-        AssessmentDTO assessmentDTO = AssessmentDTO.builder()
+        Assessment assessment = Assessment.builder()
+                .assessmentId(UUID.randomUUID().toString())
                 .userId(userId)
                 .symptomMap(initialSymptoms.stream().collect(Collectors.toMap(
                         x -> x, x -> "Yes"
                 )))
                 .build();
 
-        AssessmentDTO result = dynamoDbTemplate.save(assessmentDTO);
+        Assessment result = dynamoDbTemplate.save(assessment);
 
         List<Symptom> nextSymptomQuestions = getSymptomsNotInSet(initialSymptoms);
 
-        Assessment.AssessmentBuilder assessmentBuilder = Assessment.builder();
+        AssessmentResponse.AssessmentResponseBuilder assessmentBuilder = AssessmentResponse.builder();
         assessmentBuilder = assessmentBuilder.assessmentId(result.getAssessmentId());
 
         if(!nextSymptomQuestions.isEmpty()) {
@@ -53,23 +54,23 @@ public class AssessmentService implements AssessmentStarter, ResponseRecorder, A
     public String recordResponse(String assessmentId, String questionId, String answer) throws AssessmentNotFound {
 
         Key key = Key.builder().partitionValue(assessmentId).build();
-        AssessmentDTO assessmentDTO = dynamoDbTemplate.load(key, AssessmentDTO.class);
+        Assessment assessment = dynamoDbTemplate.load(key, Assessment.class);
 
-        if(assessmentDTO == null) {
+        if(assessment == null) {
             throw new AssessmentNotFound();
         }
 
-        Map<String, String>symptomMap = assessmentDTO.getSymptomMap();
+        Map<String, String>symptomMap = assessment.getSymptomMap();
         Map<String, String>updatedMap = new HashMap<>();
 
         if(symptomMap!=null){
             updatedMap.putAll(symptomMap);
         }
         updatedMap.put(questionId, answer);
-        assessmentDTO.setSymptomMap(updatedMap);
+        assessment.setSymptomMap(updatedMap);
 
-        assessmentDTO.incrementNumberOfQuestionsAsked();
-        AssessmentDTO updated = dynamoDbTemplate.update(assessmentDTO);
+        assessment.incrementNumberOfQuestionsAsked();
+        Assessment updated = dynamoDbTemplate.update(assessment);
 
         if(updated.getNumberOfQuestionsAsked()<3) {
             List<Symptom> nextSymptomQuestions = getSymptomsNotInSet(updated.getSymptomMap().keySet());
@@ -83,9 +84,9 @@ public class AssessmentService implements AssessmentStarter, ResponseRecorder, A
     @Override
     public AssessmentResults getResults(String assessmentId) throws AssessmentNotFound {
         Key key = Key.builder().partitionValue(assessmentId).build();
-        AssessmentDTO assessmentDTO = dynamoDbTemplate.load(key, AssessmentDTO.class);
+        Assessment assessment = dynamoDbTemplate.load(key, Assessment.class);
 
-        if(assessmentDTO == null) {
+        if(assessment == null) {
             throw new AssessmentNotFound();
         }
 
@@ -94,8 +95,8 @@ public class AssessmentService implements AssessmentStarter, ResponseRecorder, A
 
         //Get Symptoms our users answered 'Yes' to
         List<String> validSymptoms = new ArrayList<>();
-        for (String validKey : assessmentDTO.getSymptomMap().keySet()) {
-            if (assessmentDTO.getSymptomMap().get(validKey).equals("Yes")) {
+        for (String validKey : assessment.getSymptomMap().keySet()) {
+            if (assessment.getSymptomMap().get(validKey).equals("Yes")) {
                 validSymptoms.add(validKey);
             }
         }

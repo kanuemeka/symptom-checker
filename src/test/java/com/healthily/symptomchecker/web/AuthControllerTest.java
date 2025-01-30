@@ -3,10 +3,7 @@ package com.healthily.symptomchecker.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthily.symptomchecker.domain.auth.UserLogin;
 import com.healthily.symptomchecker.domain.auth.UserRegistration;
-import com.healthily.symptomchecker.web.entities.Gender;
-import com.healthily.symptomchecker.web.entities.Login;
-import com.healthily.symptomchecker.web.entities.Registration;
-import com.healthily.symptomchecker.web.entities.RegistrationResponse;
+import com.healthily.symptomchecker.web.entities.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -71,7 +68,9 @@ public class AuthControllerTest {
                 .password(password)
                 .build();
 
+
         String userId = UUID.randomUUID().toString();
+        LoginSuccess expected = LoginSuccess.builder().userId(userId).build();
 
         when(userLogin.loginUser(email, password)).thenReturn(userId);
 
@@ -80,6 +79,6 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
-                .andExpect(content().string(userId));
+                .andExpect(content().json(objectMapper.writeValueAsString(expected)));
     }
 }

@@ -3,6 +3,7 @@ package com.healthily.symptomchecker.web;
 import com.healthily.symptomchecker.domain.auth.UserLogin;
 import com.healthily.symptomchecker.domain.auth.UserRegistration;
 import com.healthily.symptomchecker.web.entities.Login;
+import com.healthily.symptomchecker.web.entities.LoginSuccess;
 import com.healthily.symptomchecker.web.entities.Registration;
 import com.healthily.symptomchecker.web.entities.RegistrationResponse;
 import jakarta.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.logging.Logger;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -21,6 +24,9 @@ public class AuthController {
     private final UserRegistration userRegistration;
 
     private final UserLogin userLogin;
+
+    private final Logger logger = Logger.getLogger(AuthController.class.getName());
+
 
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody Registration registration) {
@@ -33,8 +39,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@Valid @RequestBody Login login) {
+    public ResponseEntity<LoginSuccess> loginUser(@Valid @RequestBody Login login) {
         String userId = userLogin.loginUser(login.getEmail(), login.getPassword());
-        return ResponseEntity.ok(userId);
+        logger.info("User logged in successfully with userId: {}" + userId);
+        return ResponseEntity.ok(LoginSuccess.builder().userId(userId).build());
     }
 }

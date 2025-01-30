@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class Answer {
     private String questionId;
-    private AnswerOption answerOption;
+    private AnswerOption response;
 }

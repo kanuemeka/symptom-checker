@@ -4,12 +4,13 @@ import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -23,12 +24,12 @@ public class ConditionData {
 
     public ConditionData() {
         try {
-            File conditionsFile = ResourceUtils.getFile("classpath:conditions_data.csv");
-            File symptomsFile = ResourceUtils.getFile("classpath:symptoms_data.csv");
+            InputStream conditionsInputStream = new ClassPathResource("conditions_data.csv").getInputStream();
+            InputStream symptomsInputStream = new ClassPathResource("symptoms_data.csv").getInputStream();
 
-            CSVParser conditionsParser = CSVParser.parse(conditionsFile, Charset.defaultCharset(),
+            CSVParser conditionsParser = CSVParser.parse(conditionsInputStream, Charset.defaultCharset(),
                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
-            CSVParser symptomsParser = CSVParser.parse(symptomsFile, Charset.defaultCharset(),
+            CSVParser symptomsParser = CSVParser.parse(symptomsInputStream, Charset.defaultCharset(),
                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
 
             Iterable<CSVRecord> conditionsRecords = conditionsParser.getRecords();
