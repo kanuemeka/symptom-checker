@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -56,20 +55,20 @@ public class AssessmentControllerTest {
                 .initialSymptoms(initialSymptoms)
                 .build();
 
-        Assessment assessment = Assessment.builder()
+        AssessmentResponse assessmentResponse = AssessmentResponse.builder()
                 .assessmentId(assessmentId)
                 .nextQuestionId(nextQuestionId)
                 .build();
 
 
-        when(assessmentStarter.beginAssessment(userId, initialSymptoms)).thenReturn(assessment);
+        when(assessmentStarter.beginAssessment(userId, initialSymptoms)).thenReturn(assessmentResponse);
 
         mvc.perform(MockMvcRequestBuilders.post("/assessment/start")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newAssessment)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(assessment)));
+                .andExpect(content().json(objectMapper.writeValueAsString(assessmentResponse)));
     }
 
     @Test
@@ -79,7 +78,7 @@ public class AssessmentControllerTest {
         String nextQuestionId = "2";
         Answer answer = Answer.builder()
                 .questionId(questionId)
-                .answerOption(AnswerOption.Yes)
+                .response(AnswerOption.Yes)
                 .build();
         when(responseRecorder.recordResponse(assessmentId, questionId, AnswerOption.Yes.toString()))
                 .thenReturn(nextQuestionId);
@@ -98,7 +97,7 @@ public class AssessmentControllerTest {
         String questionId = "1";
         Answer answer = Answer.builder()
                 .questionId(questionId)
-                .answerOption(AnswerOption.Yes)
+                .response(AnswerOption.Yes)
                 .build();
         when(responseRecorder.recordResponse(assessmentId, questionId, AnswerOption.Yes.toString()))
                 .thenReturn(null);
